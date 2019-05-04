@@ -1,7 +1,11 @@
 import sys
-import os.path
-from DockerBuildManagement import ChangelogSelections, BuildSelections, PublishSelections, RunSelections, SwarmSelections, TestSelections, BuildTools
+
 from SwarmManagement import SwarmTools
+
+from DockerBuildManagement import ChangelogSelections, BuildSelections, PublishSelections, RunSelections, \
+    SwarmSelections, TestSelections, BuildTools
+from .ArgumentHandler import ArgumentHandler
+
 
 def GetInfoMsg():
     infoMsg = "Docker Build Management\r\n\r\n"
@@ -28,7 +32,9 @@ def HandleManagement(arguments):
         print(GetInfoMsg())
         return
 
-    if '-help' in arguments and len(arguments) == 1:
+    args = ArgumentHandler.parse_arguments(arguments)
+
+    if args.help in args and len(arguments) == 1:
         print(GetInfoMsg())
         return
     
@@ -43,6 +49,7 @@ def HandleManagement(arguments):
     RunSelections.HandleRunSelections(arguments)
     PublishSelections.HandlePublishSelections(arguments)
 
+
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandleManagement(arguments)
+    HandleManagement(ArgumentHandler.parse_arguments(arguments))

@@ -180,8 +180,8 @@ setup(
     # },
     entry_points={  # Optional
         'console_scripts': [
-            'DockerBuildManagement=DockerBuildManagement:main',
-            'dbm=DockerBuildManagement:main',
+            'DockerBuildManagement=DockerBuildManagement:__main__.main',
+            'dbm=DockerBuildManagement:__main__.main',
         ],
     },
 

@@ -3,6 +3,8 @@ from DockerBuildManagement import BuildTools
 import sys
 import os
 
+from .ArgumentHandler import ArgumentHandler
+
 SWARM_KEY = 'swarm'
 PROPERTIES_KEY = 'properties'
 
@@ -67,18 +69,18 @@ def BuildSwarmManagementPropertiesRow(swarmSelection):
     return swarmManagementProperties
 
 
-def GetSwarmCommand(arguments):
-    if '-start' in arguments:
+def GetSwarmCommand(args):
+    if args.start is not None:
         return '-start'
-    if '-stop' in arguments:
+    if args.stop is not None:
         return '-stop'
-    if '-restart' in arguments:
+    if args.restart is not None:
         return '-restart'
     return ''
 
 
-def CheckSwarmCommandInArguments(arguments):
-    if GetSwarmCommand(arguments) == '':
+def CheckSwarmCommandInArguments(args):
+    if GetSwarmCommand(args) == '':
         return False
     return True
 
@@ -89,31 +91,28 @@ def CheckSwarmInArguments(arguments):
     return False
 
 
-def HandleSwarmSelections(arguments):
-    if len(arguments) == 0:
-        return
-    if not(CheckSwarmInArguments(arguments)) and not(CheckSwarmCommandInArguments(arguments)):
+def HandleSwarmSelections(args):
+    if not args.swarm and not CheckSwarmCommandInArguments(args):
         return
 
-    if '-help' in arguments:
+    if args.help:
         print(GetInfoMsg())
         return
 
-    if CheckSwarmInArguments(arguments) and not(CheckSwarmCommandInArguments(arguments)):
+    if args.swarm and not CheckSwarmCommandInArguments(arguments):
         print(GetInfoMsg())
 
-    swarmSelectionsToDeploy = SwarmTools.GetArgumentValues(arguments, '-swarm')
-    swarmSelectionsToDeploy += SwarmTools.GetArgumentValues(arguments, '-s')
+    swarmSelectionsToDeploy = args.swarm_selections
 
-    if not(CheckSwarmInArguments(arguments)) and CheckSwarmCommandInArguments(arguments):
-        swarmSelectionsToDeploy += SwarmTools.GetArgumentValues(arguments, '-start')
-        swarmSelectionsToDeploy += SwarmTools.GetArgumentValues(arguments, '-stop')
-        swarmSelectionsToDeploy += SwarmTools.GetArgumentValues(arguments, '-restart')
+    if not args.swarm and CheckSwarmCommandInArguments(arguments):
+        swarmSelectionsToDeploy += args.start_selections
+        swarmSelectionsToDeploy += args.stop_selections
+        swarmSelectionsToDeploy += args.restart_selections
 
-    swarmSelections = GetSwarmSelections(arguments)
+    swarmSelections = GetSwarmSelections(args.all_arguments)
     DeploySwarmSelections(swarmSelectionsToDeploy, swarmSelections, GetSwarmCommand(arguments))
 
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandleSwarmSelections(arguments)
+    HandleSwarmSelections(ArgumentHandler.parse_arguments(arguments))

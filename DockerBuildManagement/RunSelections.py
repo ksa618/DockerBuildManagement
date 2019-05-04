@@ -4,6 +4,8 @@ from DockerBuildManagement import BuildTools
 import sys
 import os
 
+from .ArgumentHandler import ArgumentHandler
+
 RUN_KEY = 'run'
 ABORT_ON_CONTAINER_EXIT_KEY = 'abortOnContainerExit'
 DETACHED_KEY = 'detached'
@@ -51,23 +53,20 @@ def RunSelection(runSelection):
     os.chdir(cwd)
 
 
-def HandleRunSelections(arguments):
-    if len(arguments) == 0:
-        return
-    if not('-run' in arguments):
+def HandleRunSelections(args):
+    if not args.run:
         return
 
-    if '-help' in arguments:
+    if args.help:
         print(GetInfoMsg())
         return
 
-    selectionsToRun = SwarmTools.GetArgumentValues(arguments, '-run')
-    selectionsToRun += SwarmTools.GetArgumentValues(arguments, '-r')
+    selectionsToRun = args.run_selections
 
-    runSelections = GetRunSelections(arguments)
+    runSelections = GetRunSelections(args.all_arguments)
     RunSelections(selectionsToRun, runSelections)
 
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandleRunSelections(arguments)
+    HandleRunSelections(ArgumentHandler.parse_arguments(arguments))

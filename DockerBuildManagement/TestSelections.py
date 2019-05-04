@@ -4,6 +4,8 @@ from DockerBuildManagement import BuildTools
 import sys
 import os
 
+from .ArgumentHandler import ArgumentHandler
+
 TEST_KEY = 'test'
 CONTAINER_NAMES_KEY = 'containerNames'
 REMOVE_CONTAINERS_KEY = 'removeContainers'
@@ -55,23 +57,20 @@ def TestSelection(testSelection):
     os.chdir(cwd)
 
 
-def HandleTestSelections(arguments):
-    if len(arguments) == 0:
-        return
-    if not('-test' in arguments):
+def HandleTestSelections(args):
+    if not args.test:
         return
 
-    if '-help' in arguments:
+    if args.help:
         print(GetInfoMsg())
         return
 
-    selectionsToTest = SwarmTools.GetArgumentValues(arguments, '-test')
-    selectionsToTest += SwarmTools.GetArgumentValues(arguments, '-t')
+    selectionsToTest = args.test_selections
 
-    testSelections = GetTestSelections(arguments)
+    testSelections = GetTestSelections(args.all_arguments)
     TestSelections(selectionsToTest, testSelections)
 
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandleTestSelections(arguments)
+    HandleTestSelections(ArgumentHandler.parse_arguments(arguments))

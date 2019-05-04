@@ -4,6 +4,8 @@ from DockerBuildManagement import BuildTools
 import sys
 import os
 
+from .ArgumentHandler import ArgumentHandler
+
 PUBLISH_KEY = 'publish'
 CONTAINER_ARTIFACT_KEY = 'containerArtifact'
 
@@ -69,23 +71,20 @@ def PublishArtifactSelection(publishSelection):
         publishSelection[BuildTools.FILES_KEY], False)
 
 
-def HandlePublishSelections(arguments):
-    if len(arguments) == 0:
-        return
-    if not('-publish' in arguments):
+def HandlePublishSelections(args):
+    if not args.publish:
         return
 
-    if '-help' in arguments:
+    if args.help:
         print(GetInfoMsg())
         return
 
-    selectionsToPublish = SwarmTools.GetArgumentValues(arguments, '-publish')
-    selectionsToPublish += SwarmTools.GetArgumentValues(arguments, '-p')
+    selectionsToPublish = args.publish_selections
 
-    publishSelections = GetPublishSelections(arguments)
+    publishSelections = GetPublishSelections(args.all_arguments)
     PublishSelections(selectionsToPublish, publishSelections)
 
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandlePublishSelections(arguments)
+    HandlePublishSelections(ArgumentHandler.parse_arguments(arguments))

@@ -14,7 +14,7 @@ def GetInfoMsg():
     return infoMsg
 
 
-def GetChangelogSelection(arguments):
+def GetChangelogSelection(args):
     yamlData = SwarmTools.LoadYamlDataFromFiles(
         arguments, BuildTools.DEFAULT_BUILD_MANAGEMENT_YAML_FILES)
     return SwarmTools.GetProperties(arguments, CHANGELOG_KEY, GetInfoMsg(), yamlData)
@@ -28,12 +28,12 @@ def ExportChangelogSelection(changelogSelection):
         changelogSelection[FILE_KEY], BuildTools.TryGetFromDictionary(changelogSelection, ENV_VERSION_KEY, 'VERSION'))
 
 
-def HandleChangelogSelections(arguments):
-    if '-help' in arguments:
+def HandleChangelogSelections(args):
+    if args.help:
         print(GetInfoMsg())
         return
 
-    changelogSelection = GetChangelogSelection(arguments)
+    changelogSelection = GetChangelogSelection(args)
     ExportChangelogSelection(changelogSelection)
 
 

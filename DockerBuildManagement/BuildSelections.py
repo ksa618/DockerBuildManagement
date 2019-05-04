@@ -4,6 +4,8 @@ from DockerBuildManagement import BuildTools
 import sys
 import os
 
+from .ArgumentHandler import ArgumentHandler
+
 BUILD_KEY = 'build'
 SAVE_IMAGES_KEY = 'saveImages'
 
@@ -57,23 +59,20 @@ def BuildSelection(buildSelection, selectionToBuild):
     os.chdir(cwd)
 
 
-def HandleBuildSelections(arguments):
-    if len(arguments) == 0:
-        return
-    if not('-build' in arguments):
+def HandleBuildSelections(args):
+    if args.build:
         return
 
-    if '-help' in arguments:
+    if args.help:
         print(GetInfoMsg())
         return
 
-    selectionsToBuild = SwarmTools.GetArgumentValues(arguments, '-build')
-    selectionsToBuild += SwarmTools.GetArgumentValues(arguments, '-b')
+    selectionsToBuild = args.build_selections
 
-    buildSelections = GetBuildSelections(arguments)
+    buildSelections = GetBuildSelections(args.all_arguments)
     BuildSelections(selectionsToBuild, buildSelections)
 
 
 if __name__ == "__main__":
     arguments = sys.argv[1:]
-    HandleBuildSelections(arguments)
+    HandleBuildSelections(ArgumentHandler.parse_arguments(arguments))
